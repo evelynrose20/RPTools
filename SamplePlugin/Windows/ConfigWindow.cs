@@ -7,6 +7,7 @@ namespace SamplePlugin.Windows;
 
 public class ConfigWindow : Window, IDisposable
 {
+    private readonly Plugin plugin;
     private readonly Configuration configuration;
 
     // We give this window a constant ID using ###.
@@ -17,9 +18,10 @@ public class ConfigWindow : Window, IDisposable
         Flags = ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoScrollbar |
                 ImGuiWindowFlags.NoScrollWithMouse;
 
-        Size = new Vector2(232, 90);
+        Size = new Vector2(320, 180);
         SizeCondition = ImGuiCond.Always;
 
+        this.plugin = plugin;
         configuration = plugin.Configuration;
     }
 
@@ -27,33 +29,54 @@ public class ConfigWindow : Window, IDisposable
 
     public override void PreDraw()
     {
-        // Flags must be added or removed before Draw() is being called, or they won't apply
-        if (configuration.IsConfigWindowMovable)
-        {
-            Flags &= ~ImGuiWindowFlags.NoMove;
-        }
-        else
-        {
-            Flags |= ImGuiWindowFlags.NoMove;
-        }
+        // Keep settings window fixed.
+        Flags |= ImGuiWindowFlags.NoMove;
     }
 
     public override void Draw()
     {
-        // Can't ref a property, so use a local copy
-        var configValue = configuration.SomePropertyToBeSavedAndWithADefault;
-        if (ImGui.Checkbox("Random Config Bool", ref configValue))
+        ImGui.Separator();
+        ImGui.TextUnformatted("Autosave");
+
+        var autosaveEnabled = configuration.AutoSaveEnabled;
+        if (ImGui.Checkbox("Enable autosave", ref autosaveEnabled))
         {
-            configuration.SomePropertyToBeSavedAndWithADefault = configValue;
-            // Can save immediately on change if you don't want to provide a "Save and Close" button
+            configuration.AutoSaveEnabled = autosaveEnabled;
             configuration.Save();
         }
 
-        var movable = configuration.IsConfigWindowMovable;
-        if (ImGui.Checkbox("Movable Config Window", ref movable))
+        ImGui.SameLine();
+        var autosaveInterval = configuration.AutoSaveIntervalSeconds;
+        ImGui.SetNextItemWidth(90f);
+        if (ImGui.InputInt("Every (sec)", ref autosaveInterval))
         {
-            configuration.IsConfigWindowMovable = movable;
+            autosaveInterval = Math.Max(autosaveInterval, MainWindow.MinAutoSaveSeconds);
+            configuration.AutoSaveIntervalSeconds = autosaveInterval;
             configuration.Save();
         }
+
+        ImGui.Separator();
+        if (ImGui.Button("Open Notes Folder"))
+        {
+            OpenNotesFolder();
+        }
+
+        ImGui.Separator();
+        if (ImGui.Button("Open Changelog"))
+        {
+            plugin.ToggleChangelogUi();
+        }
+    }
+
+    private void OpenNotesFolder()
+    {
+        var baseDir = Plugin.PluginInterface.ConfigDirectory.FullName;
+        var notesDir = System.IO.Path.Combine(baseDir, "notes");
+        System.IO.Directory.CreateDirectory(notesDir);
+        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+        {
+            FileName = notesDir,
+            UseShellExecute = true,
+        });
     }
 }

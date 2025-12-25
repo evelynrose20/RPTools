@@ -1,12 +1,11 @@
 {
-  "Author": "your name here",
-  "Name": "Sample Plugin",
-  "Punchline": "A short one-liner that shows up in /xlplugins.",
-  "Description": "A description that shows up in /xlplugins. List any major slash-command(s).",
+  "Author": "evelynrose20",
+  "Name": "RP-Session-Report",
+  "Punchline": "A Rp note taking tool for roleplayers",
+  "Description": "A Rp note taking tool for roleplayers, to keep notes of there rp or events in game that get saved to a notepad file to view later out of game",
   "ApplicableVersion": "any",
   "Tags": [
-    "sample",
     "plugin",
-    "goats"
+    "RP"
   ]
 }
