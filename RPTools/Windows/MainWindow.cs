@@ -74,6 +74,49 @@ public class MainWindow : Window, IDisposable
             lastAutoSaveTime = ImGui.GetTime();
         }
 
+        if (ImGui.BeginTabBar("MainTabs"))
+        {
+            if (ImGui.BeginTabItem("Home"))
+            {
+                DrawHomeTab();
+                ImGui.EndTabItem();
+            }
+
+            if (ImGui.BeginTabItem("Notes"))
+            {
+                DrawNotesTab();
+                ImGui.EndTabItem();
+            }
+
+            ImGui.EndTabBar();
+        }
+    }
+
+    private void DrawHomeTab()
+    {
+        ImGui.TextUnformatted("Welcome to RP-tools.");
+        ImGui.Spacing();
+
+        if (ImGui.Button("Support Discord (placeholder)"))
+        {
+            statusMessage = "Support Discord link coming soon.";
+        }
+
+        ImGui.SameLine();
+        if (ImGui.Button("Donate (placeholder)"))
+        {
+            statusMessage = "Donate link coming soon.";
+        }
+
+        ImGui.Spacing();
+        if (ImGui.Button("Open Stutter Writer"))
+        {
+            plugin.ToggleStutterWriterUi();
+        }
+    }
+
+    private void DrawNotesTab()
+    {
         if (ImGui.Button("New note"))
         {
             noteText = string.Empty;
